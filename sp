@@ -222,6 +222,7 @@ function sp-help {
   echo ""
   echo "  sp open <uri> - Open a spotify: uri"
   echo "  sp search <q> - Start playing the best search result for the given query"
+  echo "  sp pl <q>     - Search playlists, start playing the best search result for the given query, if there is a match"
   echo ""
   echo "  sp version    - Show version information"
   echo "  sp help       - Show this information"
@@ -233,16 +234,36 @@ function sp-search {
   # Searches for tracks, plays the first result.
 
   require curl
-    #send request for token with ID and SecretID encoded to base64->grep take only  token from reply->trim reply down to token-> modified request to include token in header
-    Q="$@"
-    ST=$(curl -H "Authorization: Basic $SP_B64ID" -d grant_type=client_credentials https://accounts.spotify.com/api/token --silent \
-    | grep -E -o "\"access_token\":\"[a-zA-Z0-9_-]+\"" -m 1 )
 
-    ST2=${ST:16:115}
-    SPTFY_URI=$(curl -H "Authorization: Bearer $ST2" -s -G --data-urlencode "q=$Q" --data type=artist,track https://api.spotify.com/v1/search/ \
-    | grep -E -o "spotify:track:[a-zA-Z0-9]+" -m 1 )
+  #send request for token with ID and SecretID encoded to base64->grep take only  token from reply->trim reply down to token-> modified request to include token in header
+  FIRST="${1,,}"
+  Q="$@"
+  echo $Q
+  ST=$(curl -H "Authorization: Basic $SP_B64ID" -d grant_type=client_credentials https://accounts.spotify.com/api/token --silent \
+  | grep -E -o "\"access_token\":\"[a-zA-Z0-9_-]+\"" -m 1 )
 
-    sp-open $SPTFY_URI
+  ST2=${ST:16:115}
+
+	Q_TYPE="artist,track"
+	#[[ $FIRST == "pl" ]] && "artist,track" || "playlist"
+	if [ $FIRST == "pl" ]; then
+		Q_TYPE="playlist"
+		Q=${Q,3}
+	fi
+    
+  RES=$(curl -H "Authorization: Bearer $ST2" -s -G --data-urlencode "q=$Q" --data "type=$Q_TYPE" https://api.spotify.com/v1/search/)
+	SPTFY_TRACK_URI=$(echo "$RES" | grep -E -o "spotify:track:[a-zA-Z0-9]+" -m 1)
+	SPTFY_PLAYLIST_URI=$(echo "$RES" | grep -E -o "spotify:playlist:[a-zA-Z0-9]+" -m 1)
+	#echo $RES
+	echo $SPTFY_TRACK_URI
+	echo $SPTFY_PLAYLIST_URI
+	if [ ! -z "$SPTFY_PLAYLIST_URI" ] && [ "$Q_TYPE" == "playlist" ];
+	then
+	      sp-open $SPTFY_PLAYLIST_URI
+	else
+	      sp-open $SPTFY_TRACK_URI
+	fi
+  #sp-open $SPTFY_TRACK_URI
 }
 
 
