@@ -4,12 +4,12 @@ With this script you can easily use Spotify features via command line on Linux.
 
 ## Installation
 
-All you need to do is save the sp file in any of the directories added to yout PATH, eg. I put it in "/usr/bin".
+All you need to do is save the sp file in any of the directories added to yout PATH, e.g. I put it in "/usr/bin".
 
 ## Features
 
 You can easily see all the features with "sp help":
-
+```
 Usage: sp [command]
 Control a running Spotify instance from the command line.
 
@@ -23,9 +23,9 @@ Control a running Spotify instance from the command line.
   sp eval       - Return the metadata as a shell script
 
   sp art        - Print the URL to the current track's album artwork
-  sp display    - Display the current album artwork with `display`
+  sp display    - Display the current album artwork with display
   
-  sp feh        - Display the current album artwork with `feh`
+  sp feh        - Display the current album artwork with feh
 
   sp url        - Print the HTTP URL for the currently playing track
   sp clip       - Copy the HTTP URL to the X clipboard
@@ -39,6 +39,7 @@ Control a running Spotify instance from the command line.
   sp help       - Show this information
 
 Any other argument will start a search (i.e. 'sp foo' will search for foo).
+```
 
 ## Activate search feature
 
