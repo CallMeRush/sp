@@ -178,9 +178,7 @@ function sp-feh {
 
 function sp-url {
   # Prints the HTTP url.
-
-  TRACK=$(sp-metadata | grep "url" | cut -d'|' -f2 | cut -d':' -f3)
-  echo "http://open.spotify.com/track/$TRACK"
+  echo `sp metadata | grep url | cut -d'|' -f2`
 }
 
 function sp-clip {
